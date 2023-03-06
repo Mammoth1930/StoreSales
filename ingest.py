@@ -1,29 +1,32 @@
+"""
+This file contains functions which are used to ingest data from the source files
+to the sqlite3 database.
+"""
+
 import csv
 import pandas as pd
 
-import database
+import database as db
 
 """
 
 """
-def ingest_data(fileName):
+def ingest_data(fileName:str):
     df = parse_file(fileName)
-    
+    db.write_df_to_db(df, "SALES")
 
 """
-Opens the sales .csv file an reads it line by line. We are required to do it
-this way as the files doesn't follow a uniform format and there is information
-such as the ExtractionDateTime which is contained in the document 'header'.
+Parses the sales .csv file and extracts all of the required information.
 
 Params:
-    String fileName: The name of the .csv file to be ingested
+    fileName: The name of the .csv file to be ingested.
 
 Return:
     DataFrame: A pandas DataFrame containing all the relevant data to be
-        inserted into the SALES table
+        inserted into the SALES table.
 
 """
-def parse_file(fileName):
+def parse_file(fileName:str) -> pd.DataFrame:
 
     extractionDateTime = None
     dfColNames = None
