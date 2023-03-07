@@ -9,11 +9,14 @@ Author: Riley Farrell
 Date: 03/03/2023
 """
 
-import database as db
-import ingest
-import export
+from tabulate import tabulate
+
+from database import *
+from ingest import *
+from export import *
 
 if (__name__=="__main__"):
-    db.db_init()
-
-
+    db_init()
+    ingest_data("C:/StoreSales/Data/TestData1.CSV")
+    df = read_db_to_df("SELECT * FROM SALES")
+    print(tabulate(df, headers='keys', tablefmt='psql'))

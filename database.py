@@ -18,13 +18,23 @@ and creating the tables if they don't already exist.
 def db_init():
     DB_CON.execute(
         '''
-        CREATE TABLE IF NOT EXISTS SALES(
-            ProductCode INTEGER NOT NULL,
+        CREATE TABLE IF NOT EXISTS PRODUCTS(
+            Code TEXT,
             Description TEXT,
+            PRIMARY KEY (Code)
+        )
+        '''
+    )
+    
+    DB_CON.execute(
+        '''
+        CREATE TABLE IF NOT EXISTS SALES(
+            Code TEXT,
             Quantity INTEGER,
             Value INTEGER,
             ExtractionDateTime DATETIME,
-            PRIMARY KEY (ProductCode)
+            PRIMARY KEY (Code, ExtractionDateTime),
+            FOREIGN KEY (Code) REFERENCES PRODUCTS (Code)
         )
         '''
     )
@@ -39,9 +49,7 @@ Params:
         written to.
 """
 def write_df_to_db(df:pd.DataFrame, tableName:str):
-    cur = DB_CON.cursor()
-    df.to_sql(tableName, index=False)
-    cur.close()
+    df.to_sql(tableName, DB_CON, index=False, if_exists='append')
 
 """
 Executes an SQL query and returns the result as a DataFrame.
