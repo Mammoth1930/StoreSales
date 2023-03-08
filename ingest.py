@@ -5,6 +5,7 @@ to the sqlite3 database.
 
 import csv
 import pandas as pd
+from tabulate import tabulate
 
 from database import *
 
@@ -13,8 +14,27 @@ from database import *
 """
 def ingest_data(fileName:str):
     df = parse_file(fileName)
-    write_df_to_db(df[["Code", "Description"]], "PRODUCTS")
+    write_df_to_db(filter_product(df), "PRODUCTS")
+    print(tabulate(filter_product(df), headers='keys', ))
     write_df_to_db(df[["Code", "Quantity", "Value", "ExtractionDateTime"]], "SALES")
+
+"""
+Filters the input DataFrame to remove products which already exist in the
+PRODUCTS table.
+
+Params:
+    df: The input DataFrame which will be filtered to contain only products
+        missing from the PRODUCTS table.
+
+Return:
+    DataFrame: A filtered DataFrame which contains only products which are
+        missing from the product table. The DataFrame also contains the columns
+        which are useful for inserting into the PRODUCTS table.
+"""
+def filter_product(df:pd.DataFrame) -> pd.DataFrame:
+    product_df = read_db_to_df("SELECT Code FROM PRODUCTS")
+    missing_df = df[~df['Code'].isin(product_df['Code'])]
+    return missing_df[['Code', 'Description']]
 
 """
 Parses the sales .csv file and extracts all of the required information.

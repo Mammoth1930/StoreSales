@@ -20,3 +20,4 @@ if (__name__=="__main__"):
     ingest_data("C:/StoreSales/Data/TestData1.CSV")
     df = read_db_to_df("SELECT * FROM SALES")
     print(tabulate(df, headers='keys', tablefmt='psql'))
+    print(tabulate(read_db_to_df("SELECT * FROM PRODUCTS"), headers='keys', tablefmt='psql'))
