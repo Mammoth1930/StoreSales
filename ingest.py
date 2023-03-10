@@ -10,12 +10,15 @@ from tabulate import tabulate
 from database import *
 
 """
+Takes an appropriately formatted sales .csv file and inserts the relevant
+information into the database.
 
+Param:
+    fileName: full path of the .csv file which is being ingested
 """
 def ingest_data(fileName:str):
     df = parse_file(fileName)
     write_df_to_db(filter_product(df), "PRODUCTS")
-    print(tabulate(filter_product(df), headers='keys', ))
     write_df_to_db(df[["Code", "Quantity", "Value", "ExtractionDateTime"]], "SALES")
 
 """
@@ -74,10 +77,6 @@ def parse_file(fileName:str) -> pd.DataFrame:
             elif line[0] == "Receipt Number":
                 break
             else:
-                # ToDo remove this
-                # for data in salesData:
-                #     if line[0] == data[0]:
-                #         print(f"Key violation {line[0]}")
                 line.append(extractionDateTime)
                 salesData.append(line)
 
