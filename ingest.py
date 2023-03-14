@@ -5,7 +5,6 @@ to the sqlite3 database.
 
 import csv
 import pandas as pd
-from tabulate import tabulate
 
 from database import *
 
@@ -14,11 +13,13 @@ Takes an appropriately formatted sales .csv file and inserts the relevant
 information into the database.
 
 Param:
-    fileName: full path of the .csv file which is being ingested
+    fileName: full path of the .csv file which is being ingested.
 """
 def ingest_data(fileName:str):
     df = parse_file(fileName)
     write_df_to_db(filter_product(df), "PRODUCTS")
+    df['Quantity'] = pd.to_numeric(df['Quantity']).div(1000)
+    df['Value'] = pd.to_numeric(df['Value']).div(100)
     write_df_to_db(df[["Code", "Quantity", "Value", "ExtractionDateTime"]], "SALES")
 
 """
