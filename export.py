@@ -13,8 +13,9 @@ from database import *
 
 """
 def export_data():
-    export_df = create_export_df("ExtractionDateTime")
-    print(tabulate(export_df[:100], headers='keys', tablefmt='psql'))
+    export_df = create_export_df("strftime('%m-%Y', ExtractionDateTime)")
+    # print(tabulate(export_df[-100:], headers='keys', tablefmt='psql'))
+    export_df.to_excel('Data/Output.xlsx')
 
 """
 
@@ -45,14 +46,18 @@ def create_export_df(time_filter:str) -> pd.DataFrame:
 
     # Create a totals column for both quantity and value
     quantity_cols = [col for col in result_df if col.startswith('Quantity')]
-    # print(result_df[quantity_cols])
-    value_cols = [col for col in result_df if col.startswith('Value')]
-    # print(value_cols)
     result_df['Quantity_total'] = result_df[quantity_cols].sum(axis=1)
+
+    value_cols = [col for col in result_df if col.startswith('Value')]
     result_df['Value_total'] = result_df[value_cols].sum(axis=1)
 
     # Create a row of totals for each of the date aggregate columns and the two
     # totals columns
-     
+    totals_row = ['', '']
+    for i, col in enumerate(result_df):
+        if i > 1:
+            totals_row.append(result_df[col].sum(axis=0))
+
+    result_df.loc['Total'] = totals_row
 
     return result_df
