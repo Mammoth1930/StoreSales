@@ -5,22 +5,22 @@ to the sqlite3 database.
 
 import csv
 import pandas as pd
+from tkinter.filedialog import askopenfilenames
 
 from database import *
 
 """
-Takes an appropriately formatted sales .csv file and inserts the relevant
+Takes an appropriately formatted sales .csv file(s) and inserts the relevant
 information into the database.
-
-Param:
-    fileName: full path of the .csv file which is being ingested.
 """
-def ingest_data(fileName:str):
-    df = parse_file(fileName)
-    write_df_to_db(filter_product(df), "PRODUCTS")
-    df['Quantity'] = pd.to_numeric(df['Quantity']).div(1000)
-    df['Value'] = pd.to_numeric(df['Value']).div(100)
-    write_df_to_db(df[["Code", "Quantity", "Value", "ExtractionDateTime"]], "SALES")
+def ingest_data():
+    files = askopenfilenames(filetypes=[('CSV files', '.csv')])
+    for fileName in files:
+        df = parse_file(fileName)
+        write_df_to_db(filter_product(df), "PRODUCTS")
+        df['Quantity'] = pd.to_numeric(df['Quantity']).div(1000)
+        df['Value'] = pd.to_numeric(df['Value']).div(100)
+        write_df_to_db(df[["Code", "Quantity", "Value", "ExtractionDateTime"]], "SALES")
 
 """
 Filters the input DataFrame to remove products which already exist in the

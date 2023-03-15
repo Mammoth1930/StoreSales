@@ -9,13 +9,10 @@ Author: Riley Farrell
 Date: 03/03/2023
 """
 
-from tabulate import tabulate
-
 from database import *
-from ingest import *
-from export import *
+from interface import *
 
 if (__name__=="__main__"):
     db_init()
-    # ingest_data("C:/StoreSales/Data/TestData2.CSV")
-    export_data()
+    root = init_gui()
+    root.mainloop()

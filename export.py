@@ -5,17 +5,39 @@ the database to an external .xlsx file.
 
 import pandas as pd
 from tabulate import tabulate
+from tkinter.filedialog import asksaveasfilename
 
 from database import *
 
+GROUP_BY_OPTIONS = {
+    'ExtractionDate': 'ExtractionDateTime',
+    'Month': 'strftime("%m-%Y", ExtractionDateTime)',
+    'Year': 'strftime("%Y", ExtractionDateTime)'
+}
 
 """
 
 """
-def export_data():
-    export_df = create_export_df("strftime('%m-%Y', ExtractionDateTime)")
-    # print(tabulate(export_df[-100:], headers='keys', tablefmt='psql'))
-    export_df.to_excel('Data/Output.xlsx')
+def export_data(group_by_option: str):
+    export_df = create_export_df(GROUP_BY_OPTIONS[group_by_option])
+    file_name = asksaveasfilename(filetypes=[('Excel files', '.xlsx')], defaultextension='.xlsx')
+    if file_name != '':
+        write_to_excel(file_name, export_df)
+
+"""
+
+"""
+def write_to_excel(file_name: str, df: pd.DataFrame):
+    writer = pd.ExcelWriter(file_name)
+    df.to_excel(writer, sheet_name='sales_data')
+
+    # Auto adjust column width
+    for col in df:
+        col_width = max(df[col].astype(str).map(len).max(), len(col))
+        col_index = df.columns.get_loc(col) + 1
+        writer.sheets['sales_data'].set_column(col_index, col_index, col_width)
+
+    writer.close()
 
 """
 
