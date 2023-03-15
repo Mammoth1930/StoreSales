@@ -1,12 +1,20 @@
+"""
+This file contains logic for the application GUI.
+"""
 import tkinter as tk
 
 from ingest import *
 from export import *
 
+# Font to be used for text in the application.
 FONT = ('Arial', 18)
 
 """
+Specifies the format of the basic GUI used for this application.
 
+Return:
+    Tk: Top level widget for the GUI. This can be thought of as the application
+    window or root.
 """
 def init_gui():
     gui_root = tk.Tk()

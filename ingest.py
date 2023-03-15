@@ -14,12 +14,17 @@ Takes an appropriately formatted sales .csv file(s) and inserts the relevant
 information into the database.
 """
 def ingest_data():
+    # Ask the user the files they want to ingest via file explorer.
     files = askopenfilenames(filetypes=[('CSV files', '.csv')])
-    for fileName in files:
-        df = parse_file(fileName)
+
+    # For each file selected by the user, ingest it into the database.
+    for file_name in files:
+        df = parse_file(file_name)
         write_df_to_db(filter_product(df), "PRODUCTS")
+
         df['Quantity'] = pd.to_numeric(df['Quantity']).div(1000)
         df['Value'] = pd.to_numeric(df['Value']).div(100)
+
         write_df_to_db(df[["Code", "Quantity", "Value", "ExtractionDateTime"]], "SALES")
 
 """
@@ -53,9 +58,9 @@ Return:
 """
 def parse_file(fileName:str) -> pd.DataFrame:
 
-    extractionDateTime = None
-    dfColNames = None
-    salesData = []    
+    extraction_datetime = None
+    df_col_names = None
+    sales_data = []    
 
     with open(fileName, "r") as f:
         reader = csv.reader(f)
@@ -68,17 +73,17 @@ def parse_file(fileName:str) -> pd.DataFrame:
                 continue
             # This line should contain the extraction datetime.
             elif line[0] == "Z-Reset Report":
-                extractionDateTime = line[2]
+                extraction_datetime = line[2]
             # This line should contain the column headers.
             elif line[0] == "Code":
-                dfColNames = line
-                dfColNames.append("ExtractionDateTime")
+                df_col_names = line
+                df_col_names.append("ExtractionDateTime")
             # This is only found at the end of the file and at this point the
             # is no more useful data.
             elif line[0] == "Receipt Number":
                 break
             else:
-                line.append(extractionDateTime)
-                salesData.append(line)
+                line.append(extraction_datetime)
+                sales_data.append(line)
 
-    return pd.DataFrame(salesData, columns=dfColNames)
+    return pd.DataFrame(sales_data, columns=df_col_names)
