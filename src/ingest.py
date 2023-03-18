@@ -17,15 +17,40 @@ def ingest_data():
     # Ask the user the files they want to ingest via file explorer.
     files = askopenfilenames(filetypes=[('CSV files', '.csv')])
 
+    file_import_status = {
+        'successful': [],
+        'failed': []
+    }
+
     # For each file selected by the user, ingest it into the database.
     for file_name in files:
         df = parse_file(file_name)
-        write_df_to_db(filter_product(df), "PRODUCTS")
+
+        try:
+            write_df_to_db(filter_product(df), "PRODUCTS")
+        except Exception as error:
+            file_import_status['failed'].append(
+                (file_name.split('/')[-1], error)
+            )
+            continue
 
         df['Quantity'] = pd.to_numeric(df['Quantity']).div(1000)
         df['Value'] = pd.to_numeric(df['Value']).div(100)
 
-        write_df_to_db(df[["Code", "Quantity", "Value", "ExtractionDateTime"]], "SALES")
+        try:
+            write_df_to_db(
+                df[["Code", "Quantity", "Value", "ExtractionDateTime"]],
+                 "SALES"
+            )
+        except Exception as error:
+            file_import_status['failed'].append(
+                (file_name.split('/')[-1], error)
+            )
+        else:
+            file_import_status['successful'].append(file_name.split('/')[-1])
+    
+    return file_import_status
+
 
 """
 Filters the input DataFrame to remove products which already exist in the

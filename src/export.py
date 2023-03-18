@@ -4,6 +4,7 @@ the database to an external .xlsx file.
 """
 
 import pandas as pd
+import customtkinter as ctk
 from tkinter.filedialog import asksaveasfilename
 
 from database import *
@@ -27,6 +28,10 @@ Params:
     GROUP_BY_OPTIONS dictionary.
 """
 def export_data(group_by_option:str):
+    file_export_status = {
+        'successful': [],
+        'failed': []
+    }
     # Create the dataframe for the data we are exporting.
     export_df = create_export_df(GROUP_BY_OPTIONS[group_by_option])
 
@@ -35,7 +40,17 @@ def export_data(group_by_option:str):
 
     # If the user provided a location then write the file there.
     if file_name != '':
-        write_to_excel(file_name, export_df)
+        try:
+            write_to_excel(file_name, export_df)
+        except Exception as error:
+            file_export_status['failed'].append(
+                (file_name.split('/')[-1], error)
+            )
+        else:
+            file_export_status['successful'].append(file_name.split('/')[-1])
+    
+    return file_export_status
+
 
 """
 Writes a dataframe to an excel file at the specified location.
