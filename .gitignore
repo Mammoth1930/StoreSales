@@ -1,3 +1,4 @@
 Data/*
 sales.db
 __pycache__/*
+src/__pycache__/*
