@@ -44,7 +44,8 @@ def db_init():
 Writes information from a DataFrame to an existing sqlite table.
 
 Params:
-    df: DataFrame containing the information to be written.    
+    df: DataFrame containing the information to be written.
+   
     tableName: Name of the sqlite table we want the DataFrame info to be
         written to.
 """

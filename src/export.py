@@ -24,8 +24,8 @@ to save the file.
 
 Params:
     group_by_option: Specification on how the user would like the excel file to
-    be formatted. It is expected that this parameter will a key of the
-    GROUP_BY_OPTIONS dictionary.
+        be formatted. It is expected that this parameter will a key of the
+        GROUP_BY_OPTIONS dictionary.
 """
 def export_data(group_by_option:str):
     file_export_status = {
